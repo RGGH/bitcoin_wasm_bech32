@@ -3,9 +3,16 @@
 version = 3
 
 [[package]]
+name = "bech32"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d965446196e3b7decd44aa7ee49e31d630118f90ef12f97900f262eb915c951d"
+
+[[package]]
 name = "bitcoin_wasm_bech32"
 version = "0.1.0"
 dependencies = [
+ "bech32",
  "bs58",
  "hex",
  "ripemd",
