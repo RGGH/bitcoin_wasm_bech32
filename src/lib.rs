@@ -1,7 +1,7 @@
-use sha2::{Sha256, Digest};
+use bech32::{Bech32Writer, ToBase32};
 use ripemd::Ripemd160;
+use sha2::{Digest, Sha256};
 use wasm_bindgen::prelude::*;
-use bech32::{ToBase32, Bech32Writer};
 
 const HRP_MAINNET: &str = "bc";
 const HRP_TESTNET: &str = "tb";
@@ -36,10 +36,13 @@ pub fn generate_bech32_address(public_key_hex: &str) -> String {
     bech32_address
 }
 
-pub fn encode_segwit_address(hrp: &str, version: u8, program: &[u8]) -> Result<String, bech32::Error> {
+pub fn encode_segwit_address(
+    hrp: &str,
+    version: u8,
+    program: &[u8],
+) -> Result<String, bech32::Error> {
     let mut bech32_writer = Bech32Writer::new(hrp, bech32::Variant::Bech32)?;
     bech32_writer.write_u5(bech32::u5::try_from_u8(version)?)?;
     bech32_writer.write_all(&program.to_base32())?;
     bech32_writer.finalize()
 }
-

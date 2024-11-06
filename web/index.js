@@ -5,14 +5,17 @@ async function runWasm() {
     await init();
 
     // Define the function to generate a Bitcoin address from a public key
-    window.generateBitcoinAddress = function() {
-        const publicKeyHex = document.getElementById("input").value;
+    window.generateBitcoinAddress = function(event) {
+    event.preventDefault(); // Prevents page refresh
 
-        // Call the WASM function to generate the Bitcoin address
-        const bitcoinAddress = generate_bech32_address(publicKeyHex);
+    const publicKeyHex = document.getElementById("input").value;
 
-        document.getElementById("output").innerText = `Bitcoin Address:\n${bitcoinAddress}`;
-    };
+    // Call the WASM function to generate the Bitcoin address
+    const bitcoinAddress = generate_bech32_address(publicKeyHex);
+
+    document.getElementById("output").innerText = `Bitcoin Address:\n${bitcoinAddress}`;
+};
+
 }
 
 runWasm();
