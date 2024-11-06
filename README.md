@@ -8,6 +8,9 @@ into 5-bit "chunks" because Bech32 addresses use a base32 encoding scheme.
 
 This conversion is essential because the Bech32 alphabet can only handle values up to 31 
 (which can be represented by 5 bits) rather than the typical 256 values that a full byte (8 bits) can represent.
+---
+
+see : (reference implementation in Rust)[https://github.com/sipa/bech32/tree/master/ref/rust]
 
 ---
 
