@@ -1,3 +1,7 @@
+# Bitcoin bech32 segwit address from public key
+
+[bitcoin wiki](https://en.bitcoin.it/wiki/Bech32)
+
 In Bech32 encoding, used for SegWit (P2WPKH) Bitcoin addresses, 
 data must be converted from the standard 8-bit (or byte) representation 
 into 5-bit "chunks" because Bech32 addresses use a base32 encoding scheme. 
