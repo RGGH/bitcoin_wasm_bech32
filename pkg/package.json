@@ -1,0 +1,15 @@
+{
+  "name": "bitcoin_wasm_bech32",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "bitcoin_wasm_bech32_bg.wasm",
+    "bitcoin_wasm_bech32.js",
+    "bitcoin_wasm_bech32.d.ts"
+  ],
+  "main": "bitcoin_wasm_bech32.js",
+  "types": "bitcoin_wasm_bech32.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
