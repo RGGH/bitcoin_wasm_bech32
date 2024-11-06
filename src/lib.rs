@@ -1,8 +1,8 @@
 use sha2::{Sha256, Digest};
 use ripemd::Ripemd160;
 use wasm_bindgen::prelude::*;
+use bech32::{ToBase32, Bech32Writer};
 
-const BECH32_CHARS: &[u8] = b"qpzry9x8gf2tvdw0s3jn54khce6mua7l";
 const HRP_MAINNET: &str = "bc";
 const HRP_TESTNET: &str = "tb";
 
@@ -18,62 +18,28 @@ pub fn ripemd160(input: &[u8]) -> Vec<u8> {
     hasher.finalize().to_vec()
 }
 
-pub fn bech32_encode(hrp: &str, data: &[u8]) -> String {
-    let mut result: Vec<u8> = vec![];
-    let mut combined: Vec<u8> = Vec::new();
-
-    // Step 5: Add the witness version byte
-    combined.push(0); // Version 0
-
-    // Append data to the combined vector
-    for byte in data {
-        // Convert each byte to 5-bit representation
-        combined.push(*byte);
-    }
-
-    // Step 6: Compute the checksum
-    let checksum = bech32_checksum(hrp, &combined);
-    combined.extend(checksum);
-
-    // Step 8: Map to Bech32 characters
-    for chunk in combined.chunks(5) {
-        let value = (chunk[0] >> 3) & 31; // Get the 5-bit value
-        result.push(BECH32_CHARS[value as usize]);
-    }
-
-    // Step 9: Combine HRP, separator, and data
-    format!("{}1{}", hrp, String::from_utf8(result).expect("Invalid UTF-8"))
-}
-
-fn bech32_checksum(hrp: &str, data: &[u8]) -> Vec<u8> {
-    // Implement the checksum algorithm as per BIP 173
-    let mut values: Vec<u8> = vec![];
-    values.extend(hrp.chars().map(|c| c as u8));
-    values.push(0); // Separator
-    values.extend(data.iter());
-
-    // Generate the polynomial and checksum
-    // (For brevity, this implementation is omitted; you'd need to include the logic for generating
-    // the checksum according to BIP 173 specifications.)
-
-    // Return the calculated checksum as a Vec<u8>
-    vec![0, 0, 0, 0, 0] // Placeholder: Replace with actual checksum values
-}
-
 #[wasm_bindgen]
 pub fn generate_bech32_address(public_key_hex: &str) -> String {
     // Convert hex to bytes
     let public_key_bytes = hex::decode(public_key_hex).expect("Invalid hex string");
 
-    // Step 1: SHA-256 hashing
+    // Step 1: SHA-256 hashing of the public key
     let sha256_hash = sha256(&public_key_bytes);
 
-    // Step 2: RIPEMD-160 hashing
+    // Step 2: RIPEMD-160 hashing of the SHA-256 hash
     let ripemd160_hash = ripemd160(&sha256_hash);
 
-    // Step 3: Bech32 encoding
-    let bech32_address = bech32_encode(HRP_MAINNET, &ripemd160_hash);
+    // Step 3: Bech32 encoding with witness version 0
+    let bech32_address = encode_segwit_address(HRP_MAINNET, 0, &ripemd160_hash)
+        .expect("Error encoding Bech32 address");
 
     bech32_address
+}
+
+pub fn encode_segwit_address(hrp: &str, version: u8, program: &[u8]) -> Result<String, bech32::Error> {
+    let mut bech32_writer = Bech32Writer::new(hrp, bech32::Variant::Bech32)?;
+    bech32_writer.write_u5(bech32::u5::try_from_u8(version)?)?;
+    bech32_writer.write_all(&program.to_base32())?;
+    bech32_writer.finalize()
 }
 

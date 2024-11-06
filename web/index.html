@@ -7,52 +7,72 @@
     <title>Bitcoin (Bech32 from Public Key) Address Generator</title>
     <style>
         body {
-            background-color: #07218b; /* Dark purple */
-            color: white; /* Change text color to white for better contrast */
+            background-color: #07218b;
+            color: white;
         }
         footer {
-            background-color: grey; /* Set footer background color to grey */
-            color: white; /* Change footer text color to white */
-            padding: 10px 0; /* Add some padding to the footer */
-            text-align: center; /* Center align footer text */
-            position: fixed; /* Fix footer at the bottom */
+            background-color: grey;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            position: fixed;
             left: 0;
             bottom: 0;
-            width: 100%; /* Full width */
+            width: 100%;
         }
     </style>
 </head>
 <body>
     <div class="container mt-5">
         <h1>Bitcoin (Bech32 from Public Key) Segwit Address Generator</h1>
-        <div class="mb-3">
-            <label for="input" class="form-label">Public Key (Hex):</label>
-            <input type="text" class="form-control" id="input" placeholder="Enter public key in hex">
-        </div>
-        <button class="btn btn-primary" onclick="generateBitcoinAddress()">Generate Bitcoin Segwit Address</button>
-        <pre id="output" class="mt-2"></pre>
-        <div>
-            This is a demo - it generates a Bech32 segwit address from a Public key
-        </div>
+        <p>Generate a Bitcoin Segwit address (Bech32) from a compressed public key in hexadecimal format.</p>
+        
+        <!-- Form to capture public key input -->
+        <form onsubmit="generateBitcoinAddress(event)">
+            <div class="mb-3">
+                <label for="input" class="form-label">Public Key (Hex):</label>
+                <input type="text" class="form-control" id="input" placeholder="Enter compressed public key in hex" required>
+                <small class="form-text text-muted">Example: 0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Generate Bitcoin Segwit Address</button>
+        </form>
 
-        <div>
-            Paste in this Public key if you just want to test the generator  
-        </div>
-        <div>
-            <b>
-                0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798
-            </b>
-        </div>
-         <div>
-        <a href="https://rggh.github.io/bitcoin_hashing_wasm/">View Repo</a>
+        <!-- Display the output address or error message -->
+        <pre id="output" class="mt-2" aria-live="polite"></pre>
+
+        <p>This is a demo - it generates a Bech32 Segwit address from a public key.</p>
+        <p>Test with the following example public key:</p>
+        <code><b>0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798</b></code>
+        
+        <div class="mt-3">
+            <a href="https://rggh.github.io/bitcoin_hashing_wasm/" class="btn btn-secondary">View Repo</a>
         </div>
     </div>
 
     <footer>
-            https://www.youtube.com/@learning_rust
+        <a href="https://www.youtube.com/@learning_rust" target="_blank" style="color: white; text-decoration: none;">Visit our YouTube Channel</a>
     </footer>
 
     <script type="module" src="./index.js"></script>
+    <script>
+        async function generateBitcoinAddress(event) {
+            event.preventDefault();
+            const input = document.getElementById("input").value;
+            const output = document.getElementById("output");
+
+            try {
+                // Assume `generate_bech32_address` is exported from WebAssembly
+                const bech32Address = await generate_bech32_address(input);
+                output.textContent = `Generated Address: ${bech32Address}`;
+                output.classList.remove("text-danger");
+                output.classList.add("text-success");
+            } catch (error) {
+                output.textContent = `Error: ${error.message || "Invalid public key format"}`;
+                output.classList.remove("text-success");
+                output.classList.add("text-danger");
+            }
+        }
+    </script>
 </body>
 </html>
 
